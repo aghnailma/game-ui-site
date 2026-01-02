@@ -1,104 +1,82 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <!-- ================================================= -->
-  <!-- BASIC META                                       -->
-  <!-- ================================================= -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
   <title>Cozy Life — Playable Portfolio</title>
 
-  <!-- ================================================= -->
-  <!-- GOOGLE FONT (UI friendly & cozy)                 -->
-  <!-- ================================================= -->
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
-
-  <!-- ================================================= -->
-  <!-- MAIN STYLE (CSS TIDAK DIUBAH)                     -->
-  <!-- ================================================= -->
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
-<!-- ================================================= -->
-<!-- BACKGROUND LAYERS (SELALU DI BELAKANG UI)         -->
-<!-- ================================================= -->
+<!-- ================= BACKGROUND LAYERS ================= -->
 
-<!-- Night sky (bintang & awan) -->
 <div id="night-sky" aria-hidden="true">
   <div class="stars"></div>
   <div class="clouds"></div>
 </div>
 
-<!-- Rain visual -->
 <div id="rain-layer" aria-hidden="true"></div>
 
-<!-- Ambient sounds -->
 <audio id="rain-sound" src="rain.mp3" loop preload="auto"></audio>
 <audio id="click-sound" src="click.mp3" preload="auto"></audio>
 
+<!-- ================= SCENE : LOADING ================= -->
 
-<!-- ================================================= -->
-<!-- SCENE SYSTEM                                     -->
-<!-- Setiap <section class="scene"> = 1 layar game    -->
-<!-- ================================================= -->
-
-
-<!-- ================================================= -->
-<!-- SCENE : LOADING                                  -->
-<!-- ================================================= -->
 <section id="scene-loading" class="scene active">
   <div class="loading-center">
-
-    <!-- Game Title -->
     <h1 class="logo title-main">Cozy Life</h1>
-
-    <!-- Status text -->
     <p>Loading world...</p>
-
-    <!-- Progress bar (visual only) -->
     <div class="loading-bar"></div>
-
   </div>
 </section>
 
+<!-- ================= SCENE : START ================= -->
 
-<!-- ================================================= -->
-<!-- SCENE : START MENU                               -->
-<!-- ================================================= -->
 <section id="scene-start" class="scene">
   <div class="start-menu">
-
-    <!-- Game Title -->
     <h1 class="logo title-main">Cozy Life</h1>
-
-    <!-- Main actions -->
     <button data-action="start">Start Game</button>
     <button data-action="continue">Continue</button>
     <button data-action="credits">Credits</button>
-
   </div>
 </section>
 
+<!-- ================= SCENE : WORLD ================= -->
 
-<!-- ================================================= -->
-<!-- SCENE : MAIN WORLD                               -->
-<!-- ================================================= -->
 <section id="scene-world" class="scene">
 
-  <!-- ================= HUD TOP ================= -->
+  <!-- ===== HUD TOP ===== -->
   <header class="hud-top">
 
-    <!-- Time, date, weather -->
+    <!-- Time & Weather -->
     <div class="time-weather">
       <span id="time">--:--</span>
       <span id="date">--</span>
       <span id="weather">--</span>
     </div>
 
-    <!-- Player resources -->
+    <!-- Player Progress -->
+    <div class="player-progress">
+
+      <div class="player-level">
+        Lv. <span id="player-level">1</span>
+      </div>
+
+      <div class="exp-bar">
+        <div class="exp-fill" style="width:0%"></div>
+      </div>
+
+      <div class="player-title">
+        <span id="player-title">Wanderer</span>
+      </div>
+
+    </div>
+
+    <!-- Resources -->
     <div class="resources">
       <span id="gold">💰 0</span>
       <span id="energy">⚡ 5/5</span>
@@ -106,18 +84,19 @@
 
   </header>
 
-
-  <!-- ================= WORLD AREA ================= -->
+  <!-- ===== WORLD AREA ===== -->
   <main class="world-area">
 
     <!-- HOUSE -->
-    <div class="world-object house" data-open="journal">
+    <div class="world-object house" data-open="journal" data-state="calm">
       🏠
       <span class="window-light"></span>
     </div>
 
     <!-- GARDEN -->
-    <div class="world-object garden locked" data-quest="water">
+    <div class="world-object garden locked"
+         data-quest="water"
+         data-state="dry">
       🌱
     </div>
 
@@ -133,28 +112,32 @@
 
     <!-- QUEST TRACKER -->
     <div class="quest-tracker">
-      🎯 <span id="active-quest">No Active Quest</span>
+
+      <div class="quest-main">
+        🎯 <span id="active-quest">No Active Quest</span>
+      </div>
+
+      <div class="quest-meta">
+        <span class="quest-reward">+<span id="quest-exp">0</span> EXP</span>
+        <span class="quest-impact" id="quest-impact">—</span>
+      </div>
+
     </div>
 
   </main>
 
-
-  <!-- ================= HUD BOTTOM ================= -->
+  <!-- ===== HUD BOTTOM ===== -->
   <footer class="hud-bottom">
-
     <button data-open="inventory">🧺</button>
     <button data-open="journal">📖</button>
     <button data-open="map">🗺</button>
     <button data-open="settings">⚙</button>
-
   </footer>
 
 </section>
 
+<!-- ================= OVERLAY : INVENTORY ================= -->
 
-<!-- ================================================= -->
-<!-- OVERLAY : INVENTORY                              -->
-<!-- ================================================= -->
 <section id="overlay-inventory" class="overlay">
   <div class="panel inventory-panel">
 
@@ -163,7 +146,6 @@
       <button data-close>✖</button>
     </header>
 
-    <!-- Inventory grid -->
     <div class="inventory-grid">
       <div class="slot filled" data-item="seed">🌱</div>
       <div class="slot locked">🔒</div>
@@ -171,7 +153,6 @@
       <div class="slot locked">🔒</div>
     </div>
 
-    <!-- Item detail -->
     <div class="item-detail">
       <h3>Seed of Growth</h3>
       <p>A small beginning that can change the land.</p>
@@ -181,10 +162,8 @@
   </div>
 </section>
 
+<!-- ================= OVERLAY : JOURNAL ================= -->
 
-<!-- ================================================= -->
-<!-- OVERLAY : JOURNAL                                -->
-<!-- ================================================= -->
 <section id="overlay-journal" class="overlay">
   <div class="panel journal-panel">
 
@@ -201,10 +180,8 @@
   </div>
 </section>
 
+<!-- ================= OVERLAY : QUEST ================= -->
 
-<!-- ================================================= -->
-<!-- OVERLAY : QUEST BOARD                            -->
-<!-- ================================================= -->
 <section id="overlay-quest" class="overlay">
   <div class="panel quest-panel">
 
@@ -214,17 +191,19 @@
     </header>
 
     <ul class="quest-list">
-      <li data-quest="water">🌱 Water the Garden</li>
-      <li data-quest="play">🎮 Play a Mini Game</li>
+      <li data-quest="water" data-exp="20" data-impact="Garden grows">
+        🌱 Water the Garden
+      </li>
+      <li data-quest="play" data-exp="15" data-impact="Pond activity unlocked">
+        🎮 Play a Mini Game
+      </li>
     </ul>
 
   </div>
 </section>
 
+<!-- ================= SCENE : MINI GAME ================= -->
 
-<!-- ================================================= -->
-<!-- SCENE : MINI GAME                                -->
-<!-- ================================================= -->
 <section id="scene-minigame" class="scene">
 
   <header class="minigame-hud">
@@ -238,19 +217,13 @@
 
 </section>
 
+<!-- ================= GLOBAL POPUP ================= -->
 
-<!-- ================================================= -->
-<!-- GLOBAL POPUP                                     -->
-<!-- ================================================= -->
 <div id="popup" class="popup hidden">
   Quest Complete! 🌱
 </div>
 
-
-<!-- ================================================= -->
-<!-- MAIN SCRIPT                                       -->
-<!-- ================================================= -->
 <script src="script.js"></script>
-
 </body>
 </html>
+

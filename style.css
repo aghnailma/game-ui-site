@@ -3,7 +3,7 @@
 /* ================================================= */
 :root {
   /* Font */
-  --font-ui: 'Nunito', system-ui, sans-serif;
+  --font-ui: 'Quicksand', system-ui, sans-serif;
 
   /* Base Colors */
   --bg-day: #eaf0ff;
@@ -37,16 +37,23 @@
 }
 
 /* ================================================= */
-/* GLOBAL RESET                                      */
+/* GLOBAL RESET (GAME MODE)                          */
 /* ================================================= */
 * {
   box-sizing: border-box;
+
+  /* Disable text selection for game feel */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 html, body {
   margin: 0;
   padding: 0;
   font-family: var(--font-ui);
+  font-weight: 500; /* ⬅️ penting utk Quicksand */
   background: var(--bg-day);
   color: var(--text-main);
   height: 100%;
@@ -130,9 +137,8 @@ body.night #night-sky {
 
 .logo {
   font-size: 52px;
-  font-weight: 700;
+  font-weight: 700; /* ⬅️ tetap bold untuk judul */
   margin-bottom: var(--md);
-  color: var(--text-main);
 }
 
 .loading-bar {
@@ -185,24 +191,72 @@ body.night #night-sky {
   flex-direction: column;
 }
 
-/* HUD TOP */
+/* ================= HUD TOP ================= */
 .hud-top {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--md);
   padding: var(--md) var(--lg);
   z-index: 10;
 }
 
-.time-weather,
+/* Time & Weather */
+.time-weather {
+  background: var(--panel-light);
+  padding: var(--sm) var(--md);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-soft);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* Player Progress */
+.player-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--xs);
+}
+
+.player-level {
+  font-size: 14px;
+  font-weight: 700;
+  opacity: 0.85;
+}
+
+.exp-bar {
+  width: 140px;
+  height: 6px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.exp-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), #b7e08a);
+  transition: width .4s ease;
+}
+
+.player-title {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* Resources */
 .resources {
   background: var(--panel-light);
   padding: var(--sm) var(--md);
   border-radius: var(--r-md);
   box-shadow: var(--shadow-soft);
   font-weight: 700;
+  display: flex;
+  gap: var(--sm);
 }
 
-/* WORLD AREA */
+/* ================= WORLD AREA ================= */
 .world-area {
   position: relative;
   flex: 1;
@@ -211,19 +265,21 @@ body.night #night-sky {
 /* World objects */
 .world-object {
   position: absolute;
-  font-size: 54px;
+  font-size: 50px;
   cursor: pointer;
   transition: transform .25s ease;
+  filter: drop-shadow(0 6px 8px rgba(0,0,0,0.2));
 }
 
 .world-object:hover {
   transform: translateY(-8px) scale(1.1);
 }
 
-.house { top: 40%; left: 20%; }
-.garden { top: 60%; left: 45%; }
-.board { top: 32%; left: 65%; }
-.pond { top: 65%; left: 75%; }
+/* Priority tuning */
+.house { top: 40%; left: 20%; font-size: 56px; }
+.garden { top: 60%; left: 45%; font-size: 54px; }
+.board { top: 32%; left: 65%; opacity: 0.85; }
+.pond { top: 65%; left: 75%; opacity: 0.85; }
 
 .locked {
   opacity: 0.35;
@@ -255,9 +311,16 @@ body.night .window-light {
   padding: var(--sm) var(--md);
   border-radius: var(--r-md);
   box-shadow: var(--shadow-soft);
+  font-size: 14px;
 }
 
-/* HUD BOTTOM */
+.quest-meta {
+  margin-top: var(--xs);
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* ================= HUD BOTTOM ================= */
 .hud-bottom {
   display: flex;
   justify-content: center;
@@ -343,11 +406,260 @@ body.night .hud-bottom button {
   color: var(--text-night);
 }
 
+body.night .exp-bar {
+  background: rgba(255,255,255,0.15);
+}
+
+/* ================================================= */
+/* GLOBAL POPUP FEEDBACK                             */
+/* ================================================= */
+.popup {
+  position: fixed;
+  left: 50%;
+  bottom: 20%;
+  transform: translateX(-50%) translateY(10px);
+
+  background: var(--panel-light);
+  color: var(--text-main);
+  padding: var(--sm) var(--lg);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-deep);
+
+  font-weight: 700;
+  font-size: 16px;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s ease, transform .3s ease;
+  z-index: 30;
+}
+
+/* visible state */
+.popup:not(.hidden) {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* night safety */
+body.night .popup {
+  background: var(--panel-dark);
+  color: var(--text-night);
+}
+
+/* hidden helper */
+.hidden {
+  display: none;
+}
+
+/* ================================================= */
+/* TIME / DATE / WEATHER READABILITY                 */
+/* ================================================= */
+.time-weather {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.time-weather span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+#time::after {
+  content: " (" attr(data-tz) ")";
+  font-size: 12px;
+  opacity: 0.65;
+  margin-left: 6px;
+}
+
+
 /* ================================================= */
 /* RESPONSIVE                                        */
 /* ================================================= */
 @media (max-width: 768px) {
   .logo { font-size: 42px; }
-  .world-object { font-size: 44px; }
-  .hud-top { flex-direction: column; gap: var(--sm); }
+
+  .hud-top {
+    grid-template-columns: 1fr;
+    gap: var(--sm);
+    text-align: center;
+  }
+
+  .player-progress {
+    order: -1;
+  }
+
+  .world-object {
+    font-size: 44px;
+  }
 }
+
+/* ================================================= */
+/* UI SCALE POLISH (SAFE OVERRIDE)                   */
+/* ================================================= */
+
+/* --- Start Menu Buttons --- */
+.start-menu button {
+  height: 75px;
+  font-size: 40px;
+}
+
+/* --- HUD Top: Time / Date / Weather --- */
+.time-weather {
+  font-size: 24px;
+}
+
+.time-weather span {
+  font-size: 24px;
+}
+
+/* timezone text */
+#time::after {
+  font-size: 24px;
+}
+
+/* --- Player Progress --- */
+.player-level {
+  font-size: 24px;
+}
+
+.player-title {
+  font-size: 24px;
+}
+
+.exp-bar {
+  width: 180px;
+  height: 8px;
+}
+
+/* --- Resources --- */
+.resources {
+  font-size: 24px;
+}
+
+/* --- Quest Tracker --- */
+.quest-tracker {
+  font-size: 24px;
+}
+
+.quest-meta {
+  font-size: 14px;
+}
+
+/* --- HUD Bottom Buttons --- */
+.hud-bottom button {
+  width: 72px;
+  height: 72px;
+  font-size: 30px;
+}
+
+/* --- Overlay Panels Text --- */
+.panel {
+  font-size: 24px;
+}
+
+.panel h2 {
+  font-size: 32px;
+}
+
+/* ================================================= */
+/* TITLE READABILITY FIX                             */
+/* ================================================= */
+.logo {
+  color: #3a3f66;          /* lebih kontras tapi tetap soft */
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* night mode safety */
+body.night .logo {
+  color: #2d2d3a;
+}
+
+/* ================================================= */
+/* BUTTON FONT CONSISTENCY FIX                       */
+/* ================================================= */
+button {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* ================================================= */
+/* MICRO MOTION — TITLE & BUTTONS                    */
+/* ================================================= */
+
+/* --- Keyframes --- */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Scene enter animation --- */
+.scene.active .logo {
+  animation: fadeUp 0.8s ease-out both;
+}
+
+/* Stagger buttons */
+.scene.active .start-menu button:nth-child(2) {
+  animation: fadeUp 0.8s ease-out both;
+  animation-delay: 0.15s;
+}
+
+.scene.active .start-menu button:nth-child(3) {
+  animation: fadeUp 0.8s ease-out both;
+  animation-delay: 0.3s;
+}
+
+.scene.active .start-menu button:nth-child(4) {
+  animation: fadeUp 0.8s ease-out both;
+  animation-delay: 0.45s;
+}
+
+/* --- Button hover micro interaction --- */
+.start-menu button {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.start-menu button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 0 #4f7c2a;
+}
+
+.start-menu button:active {
+  transform: translateY(4px);
+  box-shadow: 0 4px 0 #4f7c2a;
+}
+
+/* ================================================= */
+/* GARDEN GROWTH VISUAL STATES                       */
+/* ================================================= */
+
+.garden {
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.garden.sprout {
+  filter: saturate(1.1);
+}
+
+.garden.growing {
+  filter: saturate(1.25);
+  transform: scale(1.05);
+}
+
+.garden.alive {
+  filter: saturate(1.4) brightness(1.05);
+  transform: scale(1.1);
+}
+
