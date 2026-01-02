@@ -29,9 +29,18 @@ html, body {
 }
 
 :root {
-  --glass-bg: rgba(18, 22, 36, 0.85);
+  /* --- UPDATE RESEP KACA (Bening seperti Jendela Waktu) --- */
+  
+  /* 1. Background: Kita kurangi drastis dari 0.45 jadi 0.25 (Sangat Transparan) */
+  --glass-bg: rgba(15, 25, 45, 0.25); 
+  
+  /* 2. Border: Kita tipiskan dari 0.3 jadi 0.15 biar tidak kaku */
   --glass-border: rgba(255, 255, 255, 0.15);
-  --glass-blur: blur(20px);
+  
+  /* 3. Blur: Kita kurangi dari 25px jadi 10px biar terasa 'ringan' */
+  --glass-blur: blur(10px);
+  
+  /* --- JANGAN UBAH YANG LAIN --- */
   --accent: #86cf8c;
   --accent-hover: #6abf70;
   --radius-xl: 32px;
@@ -39,14 +48,36 @@ html, body {
 }
 
 /* ================================================= */
-/* 2. BACKGROUND & LAYERS                            */
+/* 2. BACKGROUND & LAYERS (DAY/NIGHT CYCLE)          */
 /* ================================================= */
 
 #sky-layer {
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at 50% 100%, #1a213b, #0d111e);
   z-index: 0;
+  
+  /* Default (Malam) - Biru Gelap Pekat */
+  background: linear-gradient(to top, #1a213b, #0d111e);
+  
+  /* Transisi warna biar kalau ganti jam perubahannya halus (3 detik) */
+  transition: background 3s ease-in-out;
+}
+
+/* --- TAMPILAN SIANG (DAY) --- */
+body.day #sky-layer {
+  /* Biru Langit Cerah */
+  background: linear-gradient(to top, #87CEEB, #4ca1af);
+}
+
+/* --- TAMPILAN SORE (EVENING) --- */
+body.evening #sky-layer {
+  /* Gradasi Sunset (Ungu ke Oranye) */
+  background: linear-gradient(to top, #ff9966, #ff5e62, #2e1437);
+}
+
+/* --- TAMPILAN MALAM (NIGHT) - OPTIONAL LEBIH GELAP --- */
+body.night #sky-layer {
+  background: radial-gradient(circle at 50% 100%, #1a213b, #05070a);
 }
 
 #weather-layer {
@@ -69,8 +100,60 @@ html, body {
 .glass {
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  
+  /* Efek Bayangan + Kilau Putih Halus */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.2), 
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1); 
+    
+  /* Transisi halus untuk SEMUA perubahan (Warna, Border, Shadow) */
+  transition: all 0.3s ease;
+}
+
+/* --- INI BAGIAN BARUNYA (HOVER EFFECT) --- */
+.glass:hover {
+  /* 1. Background jadi sedikit lebih pekat/jelas (biar fokus) */
+  background: rgba(15, 25, 45, 0.35); 
+  
+  /* 2. Border jadi lebih putih terang (menyala) */
+  border-color: rgba(255, 255, 255, 0.4);
+  
+  /* 3. Bayangan jadi lebih tebal */
+  box-shadow: 
+    0 15px 40px rgba(0, 0, 0, 0.3), 
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+/* Styling Khusus untuk Jam/Cuaca (Biar lebih bening dari jendela lain) */
+.hud-chip {
+  /* 1. Bentuk Kapsul (Pill Shape) biar lebih manis */
+  border-radius: 99px;
+  
+  /* 2. Background Lebih Transparan (0.25) dibanding jendela biasa (0.45) */
+  background: rgba(15, 25, 45, 0.25);
+  
+  /* 3. Border Lebih Tipis & Halus */
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  
+  /* 4. Layout Rapi */
+  display: inline-flex;
+  align-items: center;
+  gap: 15px; /* Jarak antar teks */
+  padding: 10px 25px; /* Ruang napas di dalam kotak */
+  
+  /* 5. Bayangan tipis saja */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  
+  /* Reset properti glass global yang terlalu berat */
+  backdrop-filter: blur(10px); /* Blur lebih sedikit biar ringan */
+}
+
+/* Efek Hover: Sedikit lebih terang kalau disentuh mouse */
+.hud-chip:hover {
+  background: rgba(15, 25, 45, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 /* ================================================= */
@@ -150,15 +233,6 @@ html, body {
   justify-content: space-between;
   align-items: flex-start;
   z-index: 10;
-}
-
-.hud-chip {
-  padding: 16px 28px;
-  border-radius: 99px;
-  font-size: 20px;
-  display: flex;
-  gap: 20px;
-  align-items: center;
 }
 
 .quest-panel {
