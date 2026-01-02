@@ -1,665 +1,1105 @@
 /* ================================================= */
-/* ROOT DESIGN TOKENS                                */
+/* 1. RESET & CORE (DESKTOP FIRST)                   */
 /* ================================================= */
-:root {
-  /* Font */
-  --font-ui: 'Quicksand', system-ui, sans-serif;
 
-  /* Base Colors */
-  --bg-day: #eaf0ff;
-  --bg-night: #0f1430;
-
-  --panel-light: #ffffff;
-  --panel-dark: #1a2045;
-
-  --text-main: #2f3447;
-  --text-soft: #6b7190;
-  --text-night: #e9edff;
-
-  --accent: #7fbf4d;
-  --accent-dark: #5d9332;
-
-  /* Spacing */
-  --xs: 6px;
-  --sm: 12px;
-  --md: 20px;
-  --lg: 32px;
-  --xl: 48px;
-
-  /* Radius */
-  --r-sm: 14px;
-  --r-md: 22px;
-  --r-lg: 32px;
-
-  /* Shadow */
-  --shadow-soft: 0 10px 30px rgba(0,0,0,0.15);
-  --shadow-deep: 0 20px 50px rgba(0,0,0,0.25);
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* ================================================= */
-/* GLOBAL RESET (GAME MODE)                          */
-/* ================================================= */
-* {
-  box-sizing: border-box;
-
-  /* Disable text selection for game feel */
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+button, input, textarea {
+  font-family: inherit;
 }
 
 html, body {
-  margin: 0;
-  padding: 0;
-  font-family: var(--font-ui);
-  font-weight: 500; /* ⬅️ penting utk Quicksand */
-  background: var(--bg-day);
-  color: var(--text-main);
+  width: 100%;
   height: 100%;
   overflow: hidden;
+  
+  /* SETTING FONT UTAMA (UKURAN BESAR) */
+  font-family: "Quicksand", sans-serif;
+  background: #0f1424;
+  color: #eaeaf0;
+  font-size: 20px; /* Base font besar */
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+:root {
+  --glass-bg: rgba(18, 22, 36, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-blur: blur(20px);
+  --accent: #86cf8c;
+  --accent-hover: #6abf70;
+  --radius-xl: 32px;
+  --radius-lg: 24px;
 }
 
 /* ================================================= */
-/* BACKGROUND LAYERS                                 */
+/* 2. BACKGROUND & LAYERS                            */
 /* ================================================= */
-#night-sky,
-#rain-layer {
+
+#sky-layer {
   position: fixed;
   inset: 0;
-  pointer-events: none;
+  background: radial-gradient(circle at 50% 100%, #1a213b, #0d111e);
   z-index: 0;
 }
 
-/* Night sky */
-#night-sky {
-  opacity: 0;
-  transition: opacity 1s ease;
-}
-
-body.night #night-sky {
-  opacity: 1;
-}
-
-.stars {
-  position: absolute;
+#weather-layer {
+  position: fixed;
   inset: 0;
-  background:
-    radial-gradient(1px 1px at 20% 30%, #fff, transparent),
-    radial-gradient(1px 1px at 70% 40%, #fff, transparent),
-    radial-gradient(1px 1px at 40% 80%, #fff, transparent);
-  background-size: 180px 180px;
-  opacity: 0.8;
+  pointer-events: none;
+  z-index: 1;
 }
 
-.clouds {
-  position: absolute;
-  inset: -10%;
-  background:
-    radial-gradient(circle at 30% 50%, rgba(255,255,255,0.12), transparent 50%),
-    radial-gradient(circle at 70% 40%, rgba(255,255,255,0.08), transparent 60%);
-  filter: blur(16px);
-  animation: cloud-move 90s linear infinite;
-}
-
-@keyframes cloud-move {
-  from { transform: translateX(-4%); }
-  to { transform: translateX(4%); }
-}
-
-/* ================================================= */
-/* SCENE SYSTEM                                      */
-/* ================================================= */
 .scene {
   position: absolute;
   inset: 0;
   display: none;
-  z-index: 5;
+  z-index: 2;
+  flex-direction: column;
 }
 
-.scene.active {
-  display: flex;
+.scene.active { display: flex; }
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
 }
 
 /* ================================================= */
-/* LOADING & START MENU                              */
+/* 3. LOADING & START SCREEN                         */
 /* ================================================= */
-.loading-center,
-.start-menu {
-  margin: auto;
-  background: var(--panel-light);
-  padding: var(--xl);
-  border-radius: var(--r-lg);
-  box-shadow: var(--shadow-deep);
+
+#scene-loading, #scene-start {
+  justify-content: center;
+  align-items: center;
+}
+
+.loading-card, .start-card {
+  width: min(500px, 90%);
+  padding: 60px 40px;
+  border-radius: var(--radius-xl);
   text-align: center;
-  width: min(420px, 90%);
 }
 
-.logo {
-  font-size: 52px;
-  font-weight: 700; /* ⬅️ tetap bold untuk judul */
-  margin-bottom: var(--md);
+.game-title {
+  font-size: 64px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 30px;
+  text-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
 .loading-bar {
-  margin-top: var(--md);
-  height: 10px;
-  border-radius: 999px;
-  background: #eee;
+  height: 12px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 99px;
   overflow: hidden;
+  margin-top: 20px;
 }
 
-.loading-bar::after {
-  content: "";
-  display: block;
-  width: 40%;
+.loading-fill {
+  width: 0%;
   height: 100%;
-  background: linear-gradient(90deg, var(--accent), #b7e08a);
-  animation: loading 1.4s infinite;
+  background: var(--accent);
+  transition: width 0.1s linear;
 }
 
-@keyframes loading {
-  from { transform: translateX(-120%); }
-  to { transform: translateX(260%); }
+.start-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .start-menu button {
-  display: block;
-  width: 100%;
-  height: 56px;
-  margin: var(--sm) 0;
-  font-size: 18px;
+  height: 72px;
+  font-size: 28px;
   font-weight: 700;
+  color: #fff;
+  background: var(--accent);
   border: none;
-  border-radius: 999px;
-  background: linear-gradient(var(--accent), var(--accent-dark));
-  color: white;
+  border-radius: 99px;
   cursor: pointer;
-  box-shadow: 0 8px 0 #4f7c2a;
-  transition: transform .15s ease;
+  transition: transform 0.2s;
 }
 
-.start-menu button:active {
-  transform: translateY(6px);
-  box-shadow: 0 2px 0 #4f7c2a;
+.start-menu button:hover {
+  transform: scale(1.05);
+  background: var(--accent-hover);
 }
 
 /* ================================================= */
-/* WORLD SCENE                                       */
+/* 4. WORLD UI (HUD) - DESKTOP LAYOUT                */
 /* ================================================= */
+
 #scene-world {
-  flex-direction: column;
+  justify-content: space-between;
+  padding: 30px;
 }
 
-/* ================= HUD TOP ================= */
+/* HEADER */
 .hud-top {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: var(--md);
-  padding: var(--md) var(--lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   z-index: 10;
 }
 
-/* Time & Weather */
-.time-weather {
-  background: var(--panel-light);
-  padding: var(--sm) var(--md);
-  border-radius: var(--r-md);
-  box-shadow: var(--shadow-soft);
-  font-weight: 700;
-  font-size: 14px;
+.hud-chip {
+  padding: 16px 28px;
+  border-radius: 99px;
+  font-size: 20px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
 }
 
-/* Player Progress */
-.player-progress {
+.quest-panel {
+  border-radius: var(--radius-lg);
+  padding: 20px 30px;
+  min-width: 300px;
+}
+
+.quest-header {
+  font-size: 18px;
+  color: var(--accent);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.quest-name { font-size: 22px; font-weight: 700; }
+
+/* FOOTER */
+.hud-bottom {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--xs);
+  justify-content: space-between;
+  align-items: flex-end;
+  z-index: 10;
+  gap: 20px;
+}
+
+/* Player Info */
+.player-panel {
+  padding: 20px 30px;
+  border-radius: var(--radius-lg);
+  min-width: 280px;
 }
 
 .player-level {
-  font-size: 14px;
-  font-weight: 700;
-  opacity: 0.85;
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--accent);
 }
 
 .exp-bar {
-  width: 140px;
-  height: 6px;
-  background: rgba(0,0,0,0.1);
-  border-radius: 999px;
+  height: 10px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 99px;
+  margin-top: 10px;
   overflow: hidden;
 }
 
 .exp-fill {
-  height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, var(--accent), #b7e08a);
-  transition: width .4s ease;
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.3s ease;
 }
 
-.player-title {
-  font-size: 12px;
-  opacity: 0.7;
+/* ================================================= */
+/* 🧭 SIDEBAR MENU (VERTIKAL KIRI)                   */
+/* ================================================= */
+
+.action-dock {
+  /* Ubah susunan jadi menurun (Vertikal) */
+  display: flex;
+  flex-direction: column; 
+  gap: 20px; /* Jarak antar tombol */
+  
+  /* Posisi di Tengah-Kiri Layar */
+  position: fixed;
+  left: 30px;        /* Jarak dari pinggir kiri */
+  top: 50%;          /* Titik tengah vertikal */
+  bottom: auto;      /* Reset posisi bawah */
+  
+  /* Geser naik 50% dari ukurannya sendiri biar pas tengah */
+  transform: translateY(-50%); 
+  
+  /* Styling Kotak Sidebar */
+  padding: 25px 15px; /* Padding atas-bawah lebih besar */
+  border-radius: 50px; /* Bentuk Kapsul Lonjong */
+  width: fit-content;  /* Lebar menyesuaikan tombol */
+  height: auto;
+  
+  z-index: 90; /* Di atas objek game */
 }
 
-/* Resources */
-.resources {
-  background: var(--panel-light);
-  padding: var(--sm) var(--md);
-  border-radius: var(--r-md);
-  box-shadow: var(--shadow-soft);
+/* Penyesuaian Tombol di dalam Sidebar */
+.action-dock button {
+  width: 60px;       /* Sedikit lebih kecil biar elegan */
+  height: 60px;
+  font-size: 28px;   /* Ukuran ikon */
+  
+  background: rgba(255,255,255,0.1);
+  border: none;
+  border-radius: 50%; /* Bulat penuh */
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* Biar ikon pas di tengah */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Efek Hover Keren (Geser ke Kanan dikit) */
+.action-dock button:hover {
+  background: #fff;
+  color: #0f1424;
+  transform: translateX(5px) scale(1.1); /* Geser kanan + membesar */
+  box-shadow: 5px 0 15px rgba(255, 255, 255, 0.3);
+}
+/* Resources Kanan */
+.resource-panel {
+  padding: 16px 28px;
+  border-radius: 99px;
+  font-size: 22px;
   font-weight: 700;
   display: flex;
-  gap: var(--sm);
+  gap: 25px;
 }
 
-/* ================= WORLD AREA ================= */
+/* ================================================= */
+/* 5. GAME OBJECTS (LAYOUT LANDSCAPE)                */
+/* ================================================= */
+
 .world-area {
-  position: relative;
-  flex: 1;
+  position: absolute;
+  inset: 0;
+  z-index: 5;
 }
 
-/* World objects */
 .world-object {
   position: absolute;
-  font-size: 50px;
+  font-size: 120px; /* Ukuran Besar Default */
   cursor: pointer;
-  transition: transform .25s ease;
-  filter: drop-shadow(0 6px 8px rgba(0,0,0,0.2));
+  filter: drop-shadow(0 15px 15px rgba(0,0,0,0.4));
+  transition: transform 0.2s;
+  animation: float 4s ease-in-out infinite;
 }
 
 .world-object:hover {
-  transform: translateY(-8px) scale(1.1);
+  transform: translate(-50%, -50%) scale(1.15) !important;
 }
 
-/* Priority tuning */
-.house { top: 40%; left: 20%; font-size: 56px; }
-.garden { top: 60%; left: 45%; font-size: 54px; }
-.board { top: 32%; left: 65%; opacity: 0.85; }
-.pond { top: 65%; left: 75%; opacity: 0.85; }
-
-.locked {
-  opacity: 0.35;
-  filter: grayscale(1);
+/* POSISI MENYEBAR (Kiri - Tengah - Kanan) */
+.house {
+  left: 20%; top: 45%;
+  transform: translate(-50%, -50%);
 }
 
-/* Window light */
-.window-light {
-  position: absolute;
-  top: 18px;
-  left: 22px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #ffd966, #ffb703);
-  opacity: 0;
+.garden {
+  left: 50%; top: 65%;
+  transform: translate(-50%, -50%);
+  animation-delay: 1s;
 }
 
-body.night .window-light {
-  opacity: 1;
+.pond {
+  left: 80%; top: 50%; /* Pancingan di Kanan */
+  transform: translate(-50%, -50%);
+  animation-delay: 2s;
 }
 
-/* Quest tracker */
-.quest-tracker {
-  position: absolute;
-  bottom: var(--md);
-  left: var(--md);
-  background: var(--panel-light);
-  padding: var(--sm) var(--md);
-  border-radius: var(--r-md);
-  box-shadow: var(--shadow-soft);
-  font-size: 14px;
+.board {
+  left: 50%; top: 25%;
+  transform: translate(-50%, -50%);
 }
 
-.quest-meta {
-  margin-top: var(--xs);
-  font-size: 12px;
-  opacity: 0.7;
+@keyframes float {
+  0%, 100% { margin-top: 0; }
+  50% { margin-top: -20px; }
 }
 
-/* ================= HUD BOTTOM ================= */
-.hud-bottom {
+/* ================================================= */
+/* 6. DIALOG, POPUP & OVERLAYS                       */
+/* ================================================= */
+
+#dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
   display: flex;
-  justify-content: center;
-  gap: var(--md);
-  padding: var(--md);
-  z-index: 10;
+  flex-direction: column;
+  justify-content: flex-end; 
+  
+  /* UBAH INI: */
+  padding-bottom: 40px;  /* Dulu 160px. Kita turunkan lagi biar manis di bawah. */
+  
+  pointer-events: none;
 }
 
-.hud-bottom button {
-  width: 64px;
-  height: 64px;
-  border-radius: var(--r-md);
+#dialog-overlay.hidden { display: none; }
+
+.dialog-box {
+  pointer-events: auto;
+  width: min(700px, 90%);
+  margin: 0 auto;
+  padding: 30px;
+  border-radius: var(--radius-lg);
+  border: 2px solid rgba(255,255,255,0.2);
+  background: rgba(15, 20, 36, 0.95);
+  position: relative;
+  animation: slideUp 0.3s ease-out;
+}
+
+#dialog-title {
+  color: var(--accent);
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+#dialog-text {
+  font-size: 22px;
+  line-height: 1.6;
+}
+
+.dialog-arrow {
+  position: absolute;
+  right: 20px;
+  bottom: 15px;
+  color: var(--accent);
+  font-size: 24px;
+  background: none;
   border: none;
-  background: var(--panel-light);
-  font-size: 26px;
-  box-shadow: var(--shadow-soft);
+  animation: bounce 1s infinite;
   cursor: pointer;
 }
 
 /* ================================================= */
-/* OVERLAYS                                          */
+/* ✨ ELEGANT POPUP NOTIFICATION                     */
 /* ================================================= */
+
+.popup {
+  position: fixed;
+  top: 30px; /* Posisi di bawah menu bar atas */
+  left: 50%;
+  /* transform: translateX(-50%) -> DIPINDAH KE KEYFRAMES */
+  
+  /* --- TAMPILAN BARU YANG ELEGAN --- */
+  background: rgba(20, 25, 40, 0.9); /* Latar lebih gelap & solid */
+  backdrop-filter: blur(15px);       /* Efek kaca buram kuat */
+  border: 2px solid var(--accent);   /* Garis pinggir warna hijau */
+  
+  /* Efek Bayangan Bercahaya (Glow) */
+  box-shadow: 0 8px 32px -5px rgba(134, 207, 140, 0.6); 
+  
+  color: #fff;
+  padding: 16px 32px;
+  border-radius: 99px; /* Bulat penuh */
+  
+  font-size: 18px;
+  font-weight: 700; /* Teks tebal */
+  letter-spacing: 0.5px;
+  
+  z-index: 100;
+  pointer-events: none;
+  
+  /* Flex biar bisa nambah ikon */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  /* Animasi Masuk yang Smooth (Pakai Bezier biar ada bounce dikit) */
+  animation: popupSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Pastikan status akhir animasi dipertahankan */
+  animation-fill-mode: forwards; 
+}
+
+/* Menambahkan Ikon Sparkle Otomatis di depan teks */
+.popup::before {
+  content: "✨";
+  font-size: 22px;
+}
+
+/* Saat disembunyikan (dioverride oleh JS nanti) */
+.popup.hidden {
+  display: none;
+  /* Reset animasi biar bisa diputar lagi nanti */
+  animation: none;
+}
+
+/* Keyframes untuk animasi masuk dari atas */
+@keyframes popupSlideIn {
+  0% {
+    opacity: 0;
+    /* Mulai dari posisi agak atas dan kecil */
+    transform: translate(-50%, -30px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    /* Berhenti di posisi normal */
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
-  backdrop-filter: blur(8px);
-  display: none;
-  z-index: 20;
-}
-
-.overlay.active {
-  display: flex;
-}
-
-.panel {
   margin: auto;
-  background: var(--panel-light);
-  padding: var(--lg);
-  border-radius: var(--r-lg);
-  width: min(420px, 90%);
-  box-shadow: var(--shadow-deep);
-}
-
-.panel header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* Inventory */
-.inventory-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--sm);
-  margin: var(--md) 0;
-}
-
-.slot {
-  aspect-ratio: 1;
-  background: #f1f1f1;
-  border-radius: var(--r-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-}
-
-/* ================================================= */
-/* NIGHT MODE SAFETY                                 */
-/* ================================================= */
-body.night {
-  background: var(--bg-night);
-  color: var(--text-night);
-}
-
-body.night .panel,
-body.night .time-weather,
-body.night .resources,
-body.night .quest-tracker,
-body.night .hud-bottom button {
-  background: var(--panel-dark);
-  color: var(--text-night);
-}
-
-body.night .exp-bar {
-  background: rgba(255,255,255,0.15);
-}
-
-/* ================================================= */
-/* GLOBAL POPUP FEEDBACK                             */
-/* ================================================= */
-.popup {
-  position: fixed;
-  left: 50%;
-  bottom: 20%;
-  transform: translateX(-50%) translateY(10px);
-
-  background: var(--panel-light);
-  color: var(--text-main);
-  padding: var(--sm) var(--lg);
-  border-radius: var(--r-lg);
-  box-shadow: var(--shadow-deep);
-
-  font-weight: 700;
-  font-size: 16px;
-
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .3s ease, transform .3s ease;
-  z-index: 30;
-}
-
-/* visible state */
-.popup:not(.hidden) {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
-/* night safety */
-body.night .popup {
-  background: var(--panel-dark);
-  color: var(--text-night);
-}
-
-/* hidden helper */
-.hidden {
+  
+  /* --- UBAH DARI 500px JADI 850px --- */
+  width: min(850px, 90%); 
+  /* ---------------------------------- */
+  
+  height: fit-content;
+  max-height: 90vh; /* Jaga-jaga biar gak lebih tinggi dari layar */
+  padding: 40px;
+  border-radius: var(--radius-xl);
+  z-index: 60;
   display: none;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.overlay.active { display: flex; }
+
+/* ANIMASI UI */
+@keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+
+/* ================================================= */
+/* 7. SISTEM MOBILE (LANDSCAPE ENFORCED)             */
+/* ================================================= */
+
+#rotate-warning {
+  display: none; /* Default sembunyi */
+  position: fixed;
+  inset: 0;
+  background: #0f1424;
+  z-index: 9999;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+/* KITA BESARKAN UKURANNYA DI SINI */
+.rotate-icon { 
+  font-size: 80px; /* Ikon HP Besar */
+  margin-bottom: 20px; 
+  color: #fff;
+  
+  /* Pastikan nama animasi ini SAMA dengan @keyframes di bawah */
+  animation: putarHape 2.5s infinite ease-in-out; 
+}
+
+.rotate-text h2 { 
+  font-size: 24px; 
+  color: var(--accent); 
+  margin-bottom: 10px; 
+}
+
+.rotate-text p {
+  font-size: 16px;
+  color: #c4cce6;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+/* Definisikan Gerakannya */
+@keyframes putarHape {
+  0% { transform: rotate(0deg); }       /* Posisi Berdiri */
+  40% { transform: rotate(-90deg); }    /* Miring ke Kiri (Landscape) */
+  60% { transform: rotate(-90deg); }    /* Tahan sebentar... */
+  100% { transform: rotate(0deg); }     /* Balik lagi */
 }
 
 /* ================================================= */
-/* TIME / DATE / WEATHER READABILITY                 */
+/* LOGIKA MUNCULKAN PERINGATAN                       */
 /* ================================================= */
-.time-weather {
+
+/* Jika HP posisi BERDIRI (Portrait) -> Munculkan Warning */
+@media screen and (orientation: portrait) {
+  #rotate-warning { 
+    display: flex !important; /* Pakai !important biar maksa muncul */
+  }
+  
+  /* Blur background game-nya */
+  .scene { 
+    filter: blur(10px); 
+  }
+}
+
+/* Efek saat tanaman siap panen */
+.world-object.ready {
+  filter: drop-shadow(0 0 15px #ffd700); /* Bersinar emas */
+  transform: translate(-50%, -50%) scale(1.1);
+  animation: bounceReady 1s infinite;
+}
+
+@keyframes bounceReady {
+  0%, 100% { transform: translate(-50%, -50%) scale(1.1); }
+  50% { transform: translate(-50%, -50%) scale(1.2); }
+}
+
+/* ================================================= */
+/* 🔄 COOL SAVE INDICATOR (AUTO-SAVE SPINNER)        */
+/* ================================================= */
+
+#save-indicator {
+  position: fixed;
+  top: 120px;   /* Sejajar dengan menu atas */
+  left: 30px; /* Di pojok kanan */
+  z-index: 95; /* Di atas objek dunia */
+  
+  /* Tampilan kotak kaca kecil */
+  width: 50px;
+  height: 50px;
+  border-radius: 50%; /* Bulat */
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 14px;
+  
+  /* Default: Sembunyi (Transparan) */
+  opacity: 0;
+  transform: scale(0.8); /* Sedikit kecil saat sembunyi */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
 }
 
-.time-weather span {
-  display: inline-flex;
+/* Class yang ditambahkan JS saat sedang nge-save */
+#save-indicator.saving {
+  opacity: 1;
+  transform: scale(1); /* Muncul normal */
+}
+
+/* ANIMASI SPINNER MELINGKAR */
+.save-spinner {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  
+  /* Trik membuat spinner: Border transparan + 1 sisi berwarna */
+  border: 3px solid rgba(255, 255, 255, 0.1); /* Jalur redup */
+  border-top-color: var(--accent);          /* Bagian yang muter (Hijau) */
+  
+  /* Efek Glow/Bercahaya */
+  box-shadow: 0 0 15px var(--accent);
+  
+  /* Animasi berputar selamanya */
+  animation: spinSave 0.8s linear infinite;
+}
+
+@keyframes spinSave {
+  to { transform: rotate(360deg); }
+}
+
+/* ================================================= */
+/* 🛌 SLEEP SYSTEM & CURTAIN                         */
+/* ================================================= */
+
+/* Layar Hitam Penutup */
+.curtain {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 999; /* Paling atas menutupi segalanya */
+  opacity: 0;   /* Default transparan */
+  pointer-events: none; /* Tembus pandang kalau tidak aktif */
+  transition: opacity 1.5s ease-in-out; /* Animasi redup pelan 1.5 detik */
+}
+
+.curtain.active {
+  opacity: 1; /* Jadi hitam pekat */
+  pointer-events: auto; /* Memblokir klik player */
+}
+
+/* Tombol Tidur Spesial */
+.btn-sleep {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 15px;
+  font-size: 20px;
+  font-weight: 700;
+  border-radius: 99px;
+  margin: 20px 0;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(134, 207, 140, 0.4);
+  transition: transform 0.2s;
+}
+
+.btn-sleep:hover {
+  transform: scale(1.05);
+  background: var(--accent-hover);
+}
+
+/* ================================================= */
+/* 🚪 TOMBOL KELUAR (SECONDARY BUTTON)               */
+/* ================================================= */
+
+/* Target semua tombol yang fungsinya menutup overlay */
+button[data-close] {
+  background: transparent; /* Latar transparan */
+  border: 2px solid rgba(255, 255, 255, 0.2); /* Garis tepi tipis */
+  color: #c4cce6; /* Warna teks agak abu (soft) */
+  
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 99px; /* Bulat penuh */
+  
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 10px;
+  width: 100%; /* Lebar penuh biar rapi */
+}
+
+/* Efek saat diarahkan mouse */
+button[data-close]:hover {
+  background: rgba(255, 255, 255, 0.1); /* Isi sedikit warna putih */
+  border-color: #fff; /* Garis jadi putih terang */
+  color: #fff; /* Teks jadi putih terang */
+  transform: translateY(-2px); /* Naik sedikit */
+}
+
+/* Opsional: Biar tombol Tidur dan Keluar sejajar rapi */
+#overlay-home button {
+  display: block;
+  width: 100%;
+}
+
+/* ================================================= */
+/* 🎒 INVENTORY GRID SYSTEM                          */
+/* ================================================= */
+
+.inv-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 20px;
+  width: 100%;
+  margin: 10px 0;
+  
+  max-height: 60vh;
+  
+  /* --- UBAH DARI 60px JADI 120px --- */
+  padding-top: 120px; /* Ruang ekstra besar biar tooltip aman */
+  /* ---------------------------------- */
+  
+  padding-bottom: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  
+  overflow-y: auto;
+}
+
+.inv-item {
+  position: relative;
+  
+  /* --- HAPUS BARIS INI: --- */
+  /* height: 80px; */ 
+  
+  /* --- GANTI DENGAN INI: --- */
+  aspect-ratio: 1 / 1;  /* Memaksa lebar dan tinggi selalu sama (Kotak) */
+  width: 100%;          /* Mengisi penuh kolom grid */
+  /* ------------------------ */
+  
+  border-radius: 16px; /* Tetap melengkung sedikit biar modern */
+  display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 6px;
-  font-size: 14px;
+  background: rgba(255,255,255,0.05);
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
 }
 
-#time::after {
-  content: " (" attr(data-tz) ")";
-  font-size: 12px;
-  opacity: 0.65;
-  margin-left: 6px;
+.inv-item:hover {
+  transform: translateY(-5px);
+  background: rgba(255,255,255,0.15);
+  border: 1px solid var(--accent);
 }
 
-
-/* ================================================= */
-/* RESPONSIVE                                        */
-/* ================================================= */
-@media (max-width: 768px) {
-  .logo { font-size: 42px; }
-
-  .hud-top {
-    grid-template-columns: 1fr;
-    gap: var(--sm);
-    text-align: center;
-  }
-
-  .player-progress {
-    order: -1;
-  }
-
-  .world-object {
-    font-size: 44px;
-  }
-}
-
-/* ================================================= */
-/* UI SCALE POLISH (SAFE OVERRIDE)                   */
-/* ================================================= */
-
-/* --- Start Menu Buttons --- */
-.start-menu button {
-  height: 75px;
-  font-size: 40px;
-}
-
-/* --- HUD Top: Time / Date / Weather --- */
-.time-weather {
-  font-size: 24px;
-}
-
-.time-weather span {
-  font-size: 24px;
-}
-
-/* timezone text */
-#time::after {
-  font-size: 24px;
-}
-
-/* --- Player Progress --- */
-.player-level {
-  font-size: 24px;
-}
-
-.player-title {
-  font-size: 24px;
-}
-
-.exp-bar {
-  width: 180px;
-  height: 8px;
-}
-
-/* --- Resources --- */
-.resources {
-  font-size: 24px;
-}
-
-/* --- Quest Tracker --- */
-.quest-tracker {
-  font-size: 24px;
-}
-
-.quest-meta {
-  font-size: 14px;
-}
-
-/* --- HUD Bottom Buttons --- */
-.hud-bottom button {
-  width: 72px;
-  height: 72px;
-  font-size: 30px;
-}
-
-/* --- Overlay Panels Text --- */
-.panel {
-  font-size: 24px;
-}
-
-.panel h2 {
+.inv-icon {
   font-size: 32px;
 }
 
-/* ================================================= */
-/* TITLE READABILITY FIX                             */
-/* ================================================= */
-.logo {
-  color: #3a3f66;          /* lebih kontras tapi tetap soft */
+.inv-qty {
+  position: absolute;
+  bottom: 5px;
+  right: 8px;
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  color: var(--accent);
 }
 
-/* night mode safety */
-body.night .logo {
-  color: #2d2d3a;
+/* Tooltip Keren (Muncul saat Hover) */
+.inv-tooltip {
+  position: absolute;
+  bottom: 110%; /* Muncul di atas item */
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0f1424;
+  border: 1px solid var(--accent);
+  padding: 8px 12px;
+  border-radius: 8px;
+  width: 140px;
+  text-align: center;
+  font-size: 12px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 10;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.inv-item:hover .inv-tooltip {
+  opacity: 1;
 }
 
 /* ================================================= */
-/* BUTTON FONT CONSISTENCY FIX                       */
+/* 🍂 EMPTY STATE (SAAT TAS KOSONG)                  */
 /* ================================================= */
-button {
-  font-family: var(--font-ui);
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+  width: 100%;
+  color: var(--text-soft); /* Warna abu lembut */
+  grid-column: 1 / -1; /* Memaksa elemen melebar penuh (mengabaikan kolom grid) */
+  height: 100%;        /* Biar tinggi memenuhi kotak */
+}
+
+.empty-icon {
+  font-size: 64px; /* Ikon Besar */
+  margin-bottom: 15px;
+  opacity: 0.8;
+}
+
+.empty-title {
+  font-size: 20px;
   font-weight: 700;
-  letter-spacing: 0.3px;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.empty-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  opacity: 0.7;
 }
 
 /* ================================================= */
-/* MICRO MOTION — TITLE & BUTTONS                    */
+/* 🌱 GROWTH BAR (Indikator Tumbuh)                  */
 /* ================================================= */
 
-/* --- Keyframes --- */
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.growth-container {
+  position: absolute;
+  bottom: 0px; /* Posisi di kaki ikon */
+  left: 50%;
+  transform: translateX(-50%);
+  
+  width: 60px; /* Lebar bar */
+  height: 8px; /* Tinggi bar */
+  background: rgba(0,0,0,0.5); /* Latar gelap */
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.2);
 }
 
-/* --- Scene enter animation --- */
-.scene.active .logo {
-  animation: fadeUp 0.8s ease-out both;
-}
-
-/* Stagger buttons */
-.scene.active .start-menu button:nth-child(2) {
-  animation: fadeUp 0.8s ease-out both;
-  animation-delay: 0.15s;
-}
-
-.scene.active .start-menu button:nth-child(3) {
-  animation: fadeUp 0.8s ease-out both;
-  animation-delay: 0.3s;
-}
-
-.scene.active .start-menu button:nth-child(4) {
-  animation: fadeUp 0.8s ease-out both;
-  animation-delay: 0.45s;
-}
-
-/* --- Button hover micro interaction --- */
-.start-menu button {
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.start-menu button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 0 #4f7c2a;
-}
-
-.start-menu button:active {
-  transform: translateY(4px);
-  box-shadow: 0 4px 0 #4f7c2a;
+.growth-fill {
+  height: 100%;
+  background: var(--accent); /* Warna Hijau */
+  width: 0%; /* Mulai dari kosong */
+  box-shadow: 0 0 10px var(--accent);
+  
+  /* Animasi Transisi (Nanti di-trigger JS) */
+  transition: width 5s linear; 
 }
 
 /* ================================================= */
-/* GARDEN GROWTH VISUAL STATES                       */
+/* 🚚 MARKET & SHOP STYLING                          */
 /* ================================================= */
 
-.garden {
-  transition: transform 0.3s ease, filter 0.3s ease;
+/* Posisi Truk (Di Tengah Atas, bekas Papan Quest) */
+.market {
+  left: 50%; 
+  top: 30%;
+  transform: translate(-50%, -50%);
+  /* Animasi goyang dikit biar lucu */
+  animation: shakeTruck 3s ease-in-out infinite; 
 }
 
-.garden.sprout {
-  filter: saturate(1.1);
+@keyframes shakeTruck {
+  /* Tambahkan scaleX(-1) di semua baris transform untuk membalik arah truk */
+  0%, 100% { transform: translate(-50%, -50%) scaleX(-1) rotate(0deg); }
+  25% { transform: translate(-50%, -50%) scaleX(-1) rotate(-3deg); }
+  75% { transform: translate(-50%, -50%) scaleX(-1) rotate(3deg); }
 }
 
-.garden.growing {
-  filter: saturate(1.25);
-  transform: scale(1.05);
+/* Dan update hover-nya juga biar gak kebalik lagi pas disentuh */
+.market:hover {
+  transform: translate(-50%, -50%) scaleX(-1) scale(1.15) !important;
 }
 
-.garden.alive {
-  filter: saturate(1.4) brightness(1.05);
+/* Grid Toko (Mirip Inventory tapi ada tombol Jual) */
+.shop-grid {
+  display: flex;
+  flex-direction: column; /* List memanjang ke bawah */
+  gap: 15px;
+  max-height: 50vh;
+  overflow-y: auto;
+  margin: 20px 0;
+}
+
+.shop-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255,255,255,0.05);
+  padding: 15px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.shop-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  text-align: left;
+}
+
+.shop-icon { font-size: 32px; }
+
+/* Tombol Jual */
+.btn-sell {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 99px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.btn-sell:hover {
   transform: scale(1.1);
+  background: var(--accent-hover);
+  box-shadow: 0 0 15px var(--accent);
 }
 
+.btn-sell:disabled {
+  background: #555;
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ================================================= */
+/* ⚙️ SETTINGS UI                                    */
+/* ================================================= */
+
+.settings-section {
+  width: 100%;
+  text-align: left;
+  margin-bottom: 10px;
+}
+
+.settings-section h3 {
+  color: var(--accent);
+  margin-bottom: 15px;
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Styling Slider (Range Input) */
+.range-group {
+  margin-bottom: 15px;
+}
+
+.range-group label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+
+input[type="range"] {
+  width: 100%;
+  height: 6px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 5px;
+  outline: none;
+  -webkit-appearance: none; /* Wajib untuk Chrome/Safari */
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 10px var(--accent);
+}
+
+/* Tombol Bahaya (Reset) */
+.btn-danger {
+  background: rgba(255, 50, 50, 0.2);
+  border: 1px solid #ff4444;
+  color: #ff4444;
+  width: 100%;
+  padding: 12px;
+  border-radius: 99px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-danger:hover {
+  background: #ff4444;
+  color: #fff;
+  box-shadow: 0 0 15px #ff4444;
+}
+
+/* ================================================= */
+/* 🎣 FISHING MINIGAME (TIMING BAR)                  */
+/* ================================================= */
+
+.fishing-bar-container {
+  width: 100%;
+  height: 40px;
+  background: rgba(0,0,0,0.5);
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 99px;
+  margin: 30px 0;
+  position: relative;
+  overflow: hidden; /* Biar jarum gak keluar batas */
+}
+
+/* Area Target (Hijau) */
+.fish-target {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--accent); /* Hijau */
+  opacity: 0.8;
+  width: 30%; /* Lebar default, nanti diacak JS */
+  left: 35%;  /* Posisi default, nanti diacak JS */
+  box-shadow: 0 0 15px var(--accent);
+}
+
+/* Jarum Penunjuk (Putih) */
+.fish-cursor {
+  position: absolute;
+  top: -5px;
+  bottom: -5px;
+  width: 6px;
+  background: #fff;
+  left: 0%;
+  box-shadow: 0 0 10px #fff;
+  border-radius: 4px;
+  
+  /* Animasi Gerak Kiri-Kanan */
+  animation: moveCursor 1.5s ease-in-out infinite alternate;
+}
+
+/* Saat game berhenti (ditarik), animasi distop lewat JS */
+.fish-cursor.stopped {
+  animation-play-state: paused;
+}
+
+@keyframes moveCursor {
+  from { left: 2%; }
+  to { left: 98%; }
+}
+
+/* Tombol Aksi Besar */
+.btn-primary-action {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 15px 40px;
+  font-size: 24px;
+  font-weight: 800;
+  border-radius: 99px;
+  cursor: pointer;
+  box-shadow: 0 5px 20px rgba(134, 207, 140, 0.4);
+  transition: transform 0.1s;
+}
+
+.btn-primary-action:active {
+  transform: scale(0.95);
+}
+
+.btn-secondary-action {
+  background: transparent;
+  color: #aaa;
+  border: none;
+  margin-top: 15px;
+  cursor: pointer;
+  font-size: 16px;
+  text-decoration: underline;
+}
+
+/* ================================================= */
+/* 🎣 PERBAIKAN TAMPILAN MINIGAME (JADI KARTU)       */
+/* ================================================= */
+
+/* 1. Container Utama: Buat jadi Flex Center biar kartu di tengah */
+#scene-minigame {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  
+  /* --- UBAH BAGIAN INI --- */
+  /* Pakai warna Putih (255,255,255) yang sangat transparan (0.08) */
+  background: rgba(255, 255, 255, 0.01);
+  
+  /* Perkuat blurnya biar makin kerasa "kaca tebal" */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px); /* Wajib untuk Safari/iPhone */
+  
+  /* Tambahan: Sedikit efek terang di pinggiran biar makin 'glassy' */
+  box-shadow: inset 0 0 200px rgba(255,255,255,0.1);
+  /* ------------------------ */
+}
+
+/* WAJIB: Pastikan ini ada biar display flex jalan pas aktif */
+#scene-minigame.active {
+  display: flex; 
+}
+
+/* 2. Kartu Minigame: Batasi ukurannya */
+.minigame-card {
+  width: min(600px, 90%); /* Lebar maks 600px atau 90% layar HP */
+  padding: 40px;
+  border-radius: var(--radius-xl);
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5); /* Bayangan tebal biar "pop" */
+  
+  /* Animasi Muncul (Zoom In) */
+  animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+  from { transform: scale(0.8) translateY(20px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}

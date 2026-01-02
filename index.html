@@ -2,228 +2,243 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  
+  <title>Cozy Life</title>
+  </head>
 
-  <title>Cozy Life — Playable Portfolio</title>
-
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
-<!-- ================= BACKGROUND LAYERS ================= -->
+  <div id="curtain" class="curtain"></div>
 
-<div id="night-sky" aria-hidden="true">
-  <div class="stars"></div>
-  <div class="clouds"></div>
-</div>
-
-<div id="rain-layer" aria-hidden="true"></div>
-
-<audio id="rain-sound" src="rain.mp3" loop preload="auto"></audio>
-<audio id="click-sound" src="click.mp3" preload="auto"></audio>
-
-<!-- ================= SCENE : LOADING ================= -->
-
-<section id="scene-loading" class="scene active">
-  <div class="loading-center">
-    <h1 class="logo title-main">Cozy Life</h1>
-    <p>Loading world...</p>
-    <div class="loading-bar"></div>
+  <div id="overlay-home" class="overlay glass">
+    <h2>🏠 My House</h2>
+    <p>Home sweet home. Suasana tenang dan damai.</p>
+    
+    <button class="btn-sleep" onclick="startSleep()">
+      🛏️ Tidur (Pulihkan Energi)
+    </button>
+    
+    <button data-close>Keluar</button>
   </div>
-</section>
 
-<!-- ================= SCENE : START ================= -->
-
-<section id="scene-start" class="scene">
-  <div class="start-menu">
-    <h1 class="logo title-main">Cozy Life</h1>
-    <button data-action="start">Start Game</button>
-    <button data-action="continue">Continue</button>
-    <button data-action="credits">Credits</button>
+  <div id="rotate-warning">
+      <div class="rotate-icon">📱↻</div> <div class="rotate-text">
+      <h2>Please Rotate Your Device</h2>
+      <p>Cozy Life is best experienced in landscape mode.</p>
+    </div>
   </div>
-</section>
 
-<!-- ================= SCENE : WORLD ================= -->
+  <!-- ================= BACKGROUND LAYERS ================= -->
+  <div id="sky-layer"></div>
+  <div id="weather-layer"></div>
 
-<section id="scene-world" class="scene">
+  <!-- ================= SCENE : LOADING ================= -->
+  <section id="scene-loading" class="scene active">
+    <div class="loading-card glass">
+      <h1 class="game-title">Cozy Life</h1>
+      <p class="loading-text">Loading world…</p>
+      <div class="loading-bar">
+        <div class="loading-fill"></div>
+      </div>
+    </div>
+  </section>
 
-  <!-- ===== HUD TOP ===== -->
+  <!-- ================= SCENE : START ================= -->
+  <section id="scene-start" class="scene">
+    <div class="start-card glass">
+      <h1 class="game-title">Cozy Life</h1>
+
+      <div class="start-menu">
+        <button data-action="start">Start Game</button>
+        <button data-action="continue">Continue</button>
+        <button data-action="credits">Credits</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SCENE : WORLD ================= -->
+  <section id="scene-world" class="scene">
+
+    <!-- ===== HUD TOP ===== -->
   <header class="hud-top">
-
-    <!-- Time & Weather -->
-    <div class="time-weather">
-      <span id="time">--:--</span>
-      <span id="date">--</span>
-      <span id="weather">--</span>
+    
+    <div class="hud-chip time-weather glass">
+      <span id="time">00:00</span>
+      <span id="timezone" style="color: var(--accent);">WIB</span> 
+      <span id="date">—</span>
+      <span id="weather">—</span>
     </div>
 
-    <!-- Player Progress -->
-    <div class="player-progress">
-
-      <div class="player-level">
-        Lv. <span id="player-level">1</span>
+    <div class="quest-panel glass">
+      <div class="quest-header">
+        <span class="quest-icon">📜</span>
+        <span class="quest-title">Quest</span>
       </div>
-
-      <div class="exp-bar">
-        <div class="exp-fill" style="width:0%"></div>
+      <div class="quest-content">
+        <div id="active-quest" class="quest-name">No Active Quest</div>
+        <div id="quest-impact" class="quest-hint">—</div>
       </div>
-
-      <div class="player-title">
-        <span id="player-title">Wanderer</span>
-      </div>
-
-    </div>
-
-    <!-- Resources -->
-    <div class="resources">
-      <span id="gold">💰 0</span>
-      <span id="energy">⚡ 5/5</span>
     </div>
 
   </header>
 
-  <!-- ===== WORLD AREA ===== -->
-  <main class="world-area">
+  <div id="save-indicator" class="glass">
+    <div class="save-spinner"></div>
+  </div>
 
-    <!-- HOUSE -->
-    <div class="world-object house" data-open="journal" data-state="calm">
-      🏠
-      <span class="window-light"></span>
-    </div>
+    <!-- ===== WORLD GAMEPLAY AREA ===== -->
+    <main class="world-area">
+      <div class="world-object house" data-open="home">🏠</div>
+      
+      <div class="world-object market" data-open="shop">🚚</div>
+      <div class="world-object garden locked" data-quest="water">🌱</div>
+      <div class="world-object pond" data-open="pond">🎣</div>
+    </main>
 
-    <!-- GARDEN -->
-    <div class="world-object garden locked"
-         data-quest="water"
-         data-state="dry">
-      🌱
-    </div>
+    <!-- ===== HUD BOTTOM ===== -->
+    <footer class="hud-bottom">
 
-    <!-- QUEST BOARD -->
-    <div class="world-object board" data-open="quest">
-      📜
-    </div>
+      <!-- Player Info (Left Bottom) -->
+      <div class="player-panel glass">
+        <div class="player-level">
+          Lv. <span id="player-level">1</span>
+        </div>
 
-    <!-- MINI GAME -->
-    <div class="world-object pond" data-open="minigame">
-      🎣
-    </div>
+        <div class="player-title" id="player-title">
+          Wanderer
+        </div>
 
-    <!-- QUEST TRACKER -->
-    <div class="quest-tracker">
-
-      <div class="quest-main">
-        🎯 <span id="active-quest">No Active Quest</span>
+        <div class="exp-bar">
+          <div class="exp-fill"></div>
+        </div>
       </div>
 
-      <div class="quest-meta">
-        <span class="quest-reward">+<span id="quest-exp">0</span> EXP</span>
-        <span class="quest-impact" id="quest-impact">—</span>
+      <!-- Action Dock (Center Bottom) -->
+      <div class="action-dock glass">
+        <button data-open="inventory">🧺</button>
+        <button data-open="journal">📖</button>
+        
+        <button data-action="quest-board">📜</button> 
+        
+        <button data-open="map">🗺</button>
+        <button data-open="settings">⚙</button>
       </div>
 
+      <!-- Resources (Right Bottom) -->
+      <div class="resource-panel glass">
+        <span id="gold">💰 0</span>
+        <span id="energy">⚡ 5/5</span>
+      </div>
+
+    </footer>
+
+  </section>
+
+  <!-- ================= SCENE : MINIGAME ================= -->
+  <section id="scene-minigame" class="scene">
+  <div class="minigame-card glass">
+    <h2>🎣 Mancing Mania</h2>
+    <p>Tekan "TARIK" saat jarum di area hijau!</p>
+    
+    <div class="fishing-bar-container">
+      <div id="fish-target" class="fish-target"></div>
+      <div id="fish-cursor" class="fish-cursor"></div>
     </div>
 
-  </main>
-
-  <!-- ===== HUD BOTTOM ===== -->
-  <footer class="hud-bottom">
-    <button data-open="inventory">🧺</button>
-    <button data-open="journal">📖</button>
-    <button data-open="map">🗺</button>
-    <button data-open="settings">⚙</button>
-  </footer>
-
+    <div class="minigame-controls">
+      <button id="btn-catch" class="btn-primary-action">🎣 TARIK!</button>
+      <button data-exit class="btn-secondary-action">Menyerah</button>
+    </div>
+  </div>
 </section>
 
-<!-- ================= OVERLAY : INVENTORY ================= -->
+  <!-- ================= OVERLAYS ================= -->
+  <div id="overlay-inventory" class="overlay glass">
+    <h2>🎒 Inventory</h2>
+    
+    <div id="inventory-grid" class="inv-grid">
+      </div>
+    
+    <button data-close>Tutup</button>
+  </div>
 
-<section id="overlay-inventory" class="overlay">
-  <div class="panel inventory-panel">
+  <div id="overlay-shop" class="overlay glass">
+    <h2>🏪 Pasar Desa</h2>
+    <p>Jual hasil panenmu untuk mendapatkan Gold.</p>
+    
+    <div id="shop-list" class="shop-grid">
+      </div>
+    
+    <button data-close>Tutup</button>
+  </div>
 
-    <header>
-      <h2>Inventory</h2>
-      <button data-close>✖</button>
-    </header>
+  <div id="overlay-journal" class="overlay glass">
+    <h2>Journal</h2>
+    <button data-close>Close</button>
+  </div>
 
-    <div class="inventory-grid">
-      <div class="slot filled" data-item="seed">🌱</div>
-      <div class="slot locked">🔒</div>
-      <div class="slot locked">🔒</div>
-      <div class="slot locked">🔒</div>
+  <div id="overlay-settings" class="overlay glass">
+  <h2>⚙️ Pengaturan</h2>
+
+  <div class="settings-section">
+    <h3>Audio Volume</h3>
+    
+    <div class="range-group">
+      <label>🎵 Musik (BGM)</label>
+      <input type="range" id="vol-bgm" min="0" max="1" step="0.1" value="0.3">
     </div>
 
-    <div class="item-detail">
-      <h3>Seed of Growth</h3>
-      <p>A small beginning that can change the land.</p>
-      <button data-use>Use</button>
+    <div class="range-group">
+      <label>🌧️ Suara Alam (Ambience)</label>
+      <input type="range" id="vol-ambience" min="0" max="1" step="0.1" value="0.5">
     </div>
 
-  </div>
-</section>
-
-<!-- ================= OVERLAY : JOURNAL ================= -->
-
-<section id="overlay-journal" class="overlay">
-  <div class="panel journal-panel">
-
-    <header>
-      <h2>Journal</h2>
-      <button data-close>✖</button>
-    </header>
-
-    <article>
-      <p>Today felt calm.</p>
-      <p>The land is slowly responding to my care.</p>
-    </article>
-
-  </div>
-</section>
-
-<!-- ================= OVERLAY : QUEST ================= -->
-
-<section id="overlay-quest" class="overlay">
-  <div class="panel quest-panel">
-
-    <header>
-      <h2>Community Board</h2>
-      <button data-close>✖</button>
-    </header>
-
-    <ul class="quest-list">
-      <li data-quest="water" data-exp="20" data-impact="Garden grows">
-        🌱 Water the Garden
-      </li>
-      <li data-quest="play" data-exp="15" data-impact="Pond activity unlocked">
-        🎮 Play a Mini Game
-      </li>
-    </ul>
-
-  </div>
-</section>
-
-<!-- ================= SCENE : MINI GAME ================= -->
-
-<section id="scene-minigame" class="scene">
-
-  <header class="minigame-hud">
-    <span>Score: <strong id="score">0</strong></span>
-    <button data-exit>Exit</button>
-  </header>
-
-  <div class="minigame-area">
-    <p>Mini Game Here</p>
+    <div class="range-group">
+      <label>🔔 Efek Suara (SFX)</label>
+      <input type="range" id="vol-sfx" min="0" max="1" step="0.1" value="0.6">
+    </div>
   </div>
 
-</section>
+  <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); width:100%; margin: 10px 0;">
 
-<!-- ================= GLOBAL POPUP ================= -->
-
-<div id="popup" class="popup hidden">
-  Quest Complete! 🌱
+  <div class="settings-section">
+    <h3>Data Game</h3>
+    <p style="font-size: 14px; opacity: 0.7; margin-bottom: 10px;">
+      Ingin mengulang dari awal? Semua progress akan hilang.
+    </p>
+    <button id="btn-reset" class="btn-danger">🗑️ Hapus Data & Reset</button>
+  </div>
+  
+  <button data-close>Tutup</button>
 </div>
 
-<script src="script.js"></script>
+  <div id="dialog-overlay" class="hidden">
+    <div class="dialog-box glass">
+      <h3 id="dialog-title">Character Name</h3>
+      <p id="dialog-text">Halo, selamat datang di dunia ini...</p>
+      <button id="dialog-next" class="dialog-arrow">▼</button>
+    </div>
+  </div>
+
+  <!-- ================= POPUP FEEDBACK ================= -->
+  <div id="popup" class="popup hidden"></div>
+
+  <!-- ================= AUDIO ================= -->
+  <audio id="bgm-music" loop></audio>
+  
+  <audio id="sfx-ambience" src="rain.mp3" loop></audio>
+  
+  <audio id="sfx-ui"></audio>
+
+  <script src="script.js"></script>
 </body>
 </html>
-
