@@ -270,26 +270,31 @@ const Dialog = {
 /* ================================================= */
 
 function switchScene(target) {
-  $$(".scene").forEach(s => s.classList.remove("active"));
-  $(`scene-${target}`)?.classList.add("active");
-  Game.scene = target;
+  const curtain = $("#curtain");
+  curtain.classList.add("active"); // Tutup layar
 
-  const bottomUI = document.querySelector(".ui-bottom"); // Ambil elemen UI bawah
-  
-  if (target === 'minigame') {
-    // Kalau sedang main minigame, sembunyikan dialog
-    if (bottomUI) bottomUI.style.display = 'none';
-    
-  } else {
-    // Kalau di scene lain (world/home), munculkan lagi
-    if (bottomUI) bottomUI.style.display = 'block';
-  }
-  
-  // Audio Logic per Scene
-  if (target === "world") {
-    AudioSys.playAmbience(); // Mulai suara hujan/alam
-    AudioSys.playBGM('bgm_enlivening.mp3'); // Mulai suara bgm
-  }
+  setTimeout(() => {
+    // Logika ganti scene lama Anda
+    $$(".scene").forEach(s => s.classList.remove("active"));
+    $(`scene-${target}`)?.classList.add("active");
+    Game.scene = target;
+
+    // UI visibility logic
+    const bottomUI = document.querySelector(".ui-bottom");
+    if (target === 'minigame') {
+      if (bottomUI) bottomUI.style.display = 'none';
+    } else {
+      if (bottomUI) bottomUI.style.display = 'block';
+    }
+
+    // Audio per Scene
+    if (target === "world") {
+      AudioSys.playAmbience();
+      AudioSys.playBGM('bgm_enlivening.mp3');
+    }
+
+    curtain.classList.remove("active"); // Buka layar kembali
+  }, 1000); // Waktu jeda di tengah kegelapan
 }
 
 /* ================================================= */
@@ -1156,7 +1161,10 @@ function handleGardenSlot(index) {
 
   // --- FASE 1: TANAH KOSONG (State 0) -> MENANAM ---
   if (slotData.state === 0) {
-    
+
+    AudioSys.playTone(400, 'triangle', 0.2); // Suara "thump" tanah
+    AudioSys.playSFX('water'); // Suara air yang sudah Anda buat
+
     // Cek Energi
     if (Game.resources.energy <= 0) {
       Dialog.show("Low Energy", "Kamu terlalu lelah. Tidur dulu.");
@@ -1197,6 +1205,10 @@ function handleGardenSlot(index) {
   else if (slotData.state === 1) {
     // Cek apakah waktu tumbuh sudah selesai?
     const now = Date.now();
+
+    AudioSys.playTone(800, 'sine', 0.1); 
+    setTimeout(() => AudioSys.playTone(1000, 'sine', 0.1), 50); // Suara "pop" ganda
+
     if (now >= slotData.finishTime) {
       // Sudah matang! Ubah status jadi siap panen
       slotData.state = 2;
@@ -1257,7 +1269,8 @@ function startGardenTicker() {
     
     // Cek semua slot (0, 1, 2)
     Game.garden.forEach((slot, index) => {
-      
+      const timePassed = slot.totalTime - timeLeft;
+      const percent = (timePassed / slot.totalTime) * 100;
       // Hanya proses jika statusnya SEDANG TUMBUH (State 1)
       if (slot.state === 1) {
         const now = Date.now();
@@ -1301,9 +1314,20 @@ function startGardenTicker() {
           // Tapi kita mau barnya mengecil atau membesar? 
           // Mari kita buat MEMBESAR (0% -> 100%)
           const timePassed = slot.totalTime - timeLeft;
+          
           const percent = (timePassed / slot.totalTime) * 100;
+          // Opsi A: Jika ingin border memutar (menggunakan clip-path atau stroke-dasharray)
+          // Opsi B: Mengubah warna border secara bertahap
+          barEl.style.clipPath = `inset(0 ${100 - percent}% 0 0)`; // Progres menyamping pada border
           
           barEl.style.width = `${percent}%`;
+
+          if (barEl) {
+          barEl.style.width = 'auto'; // Pastikan lebar otomatis
+          barEl.style.height = 'auto';
+          // Menganimasi border yang melingkari kotak
+          barEl.style.clipPath = `inset(0% ${100 - percent}% 0% 0%)`; 
+          }
         }
       }
     });

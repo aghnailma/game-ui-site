@@ -374,6 +374,23 @@ body.night #sky-layer {
   transform: translate(-50%, -50%) scale(1.15) !important;
 }
 
+/* Efek saat objek ditekan/diklik */
+.world-object:active {
+  transform: translate(-50%, -50%) scale(0.9) !important;
+  transition: transform 0.1s ease;
+}
+
+/* Animasi muncul untuk elemen UI yang baru terbuka */
+.overlay.active {
+  display: flex;
+  animation: zoomIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes zoomIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 /* POSISI MENYEBAR (Kiri - Tengah - Kanan) */
 .house {
   left: 20%; top: 45%;
@@ -399,18 +416,16 @@ body.night #sky-layer {
   height: 70px;
   background: rgba(0, 0, 0, 0.3);
   border-radius: 15px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  /* Border dasar yang redup */
+  border: 3px solid rgba(255, 255, 255, 0.1); 
   
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 32px;
   cursor: pointer;
-  transition: transform 0.2s, background 0.2s;
-  
-  /* --- TAMBAHKAN 2 BARIS PENTING INI --- */
-  position: relative; /* Agar timer & bar tidak kabur keluar kotak */
-  overflow: hidden;   /* Agar bar hijaunya terpotong rapi mengikuti lengkungan sudut */
+  position: relative; 
+  transition: transform 0.2s, background 0.2s, border-color 0.3s;
 }
 
 .garden-slot:hover {
@@ -427,34 +442,40 @@ body.night #sky-layer {
   animation: bounceReady 1s infinite;
 }
 
-/* Teks Timer (Hitung Mundur) */
+/* Perbaikan Timer agar melayang di atas bingkai */
 .slot-timer {
   position: absolute;
-  top: -10px; /* Muncul melayang di atas pot */
-  background: rgba(0, 0, 0, 0.7);
+  top: -28px; 
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 20, 36, 0.8);
   color: #fff;
   font-size: 12px;
-  padding: 2px 6px;
-  border-radius: 10px;
-  font-weight: bold;
-  pointer-events: none; /* Supaya tetap bisa klik pot di bawahnya */
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   z-index: 10;
   white-space: nowrap;
 }
 
-/* Update Loading Bar (Hapus Transition CSS) */
-/* Update class ini juga */
+/* Loader diubah menjadi Border Progress */
 .slot-loader {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 5px; /* Sedikit ditebalkan biar jelas */
-  background: var(--accent); /* Warna Hijau */
-  width: 0%;   /* Nanti diatur JS */
-  z-index: 5;  /* Pastikan muncul di atas tanah */
+  /* inset: -3px pastikan loader menumpuk tepat di atas border asli */
+  inset: -3px; 
+  border: 3px solid var(--accent);
+  border-radius: 15px;
+  background: transparent;
+  width: auto; 
+  height: auto;
+  z-index: 5;
+  pointer-events: none;
   
-  /* Hapus transition kalau masih ada, biar geraknya mulus diatur JS */
-  transition: none; 
+  /* Efek Glow pada border progres */
+  box-shadow: 0 0 10px rgba(134, 207, 140, 0.3);
+  
+  /* Gunakan clip-path untuk menganimasi border mengikuti arah jarum jam */
+  transition: none;
 }
 
 .pond {
@@ -1450,15 +1471,14 @@ input[type="range"]::-webkit-slider-thumb {
 /* ================================================= */
 
 .floating-text {
-  position: fixed; /* Supaya bisa muncul di mana saja di layar */
+  position: fixed;
   font-weight: 800;
   font-size: 24px;
   color: #fff;
-  text-shadow: 0 2px 5px rgba(0,0,0,0.5); /* Bayangan biar terbaca jelas */
-  pointer-events: none; /* Biar bisa ditembus klik mouse */
-  z-index: 9999; /* Paling atas */
-  
-  /* Animasi Gerak */
+  text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+  pointer-events: none;
+  /* Gunakan nilai yang sangat tinggi */
+  z-index: 99999; 
   animation: floatUp 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
@@ -1561,3 +1581,16 @@ input[type="range"]::-webkit-slider-thumb {
   letter-spacing: 1px;
 }
 
+/* Memberikan tone warna pada dunia berdasarkan waktu */
+body.evening .world-area {
+  filter: sepia(0.3) saturate(1.2) hue-rotate(-20deg);
+}
+
+body.night .world-area {
+  filter: brightness(0.6) saturate(0.8) blue(0.2);
+}
+
+/* Transisi halus saat pergantian waktu */
+.world-area {
+  transition: filter 1s ease-in-out;
+}
