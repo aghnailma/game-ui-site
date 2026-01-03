@@ -100,7 +100,13 @@
       <div class="world-object house" data-open="home">🏠</div>
       
       <div class="world-object market" data-open="shop">🚚</div>
-      <div class="world-object garden locked" data-quest="water">🌱</div>
+      <div class="world-object garden-area">
+        <div id="slot-0" class="garden-slot" onclick="handleGardenSlot(0)">🌱</div>
+        
+        <div id="slot-1" class="garden-slot" onclick="handleGardenSlot(1)">🌱</div>
+        
+        <div id="slot-2" class="garden-slot" onclick="handleGardenSlot(2)">🌱</div>
+      </div>
       <div class="world-object pond" data-open="pond">🎣</div>
     </main>
 
@@ -240,5 +246,6 @@
   <audio id="sfx-ui"></audio>
 
   <script src="script.js"></script>
+
 </body>
 </html>

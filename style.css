@@ -32,10 +32,10 @@ html, body {
   /* --- UPDATE RESEP KACA (Bening seperti Jendela Waktu) --- */
   
   /* 1. Background: Kita kurangi drastis dari 0.45 jadi 0.25 (Sangat Transparan) */
-  --glass-bg: rgba(15, 25, 45, 0.25); 
+  --glass-bg: rgba(5, 15, 25, 0.35); 
   
   /* 2. Border: Kita tipiskan dari 0.3 jadi 0.15 biar tidak kaku */
-  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.25);
   
   /* 3. Blur: Kita kurangi dari 25px jadi 10px biar terasa 'ringan' */
   --glass-blur: blur(10px);
@@ -380,10 +380,81 @@ body.night #sky-layer {
   transform: translate(-50%, -50%);
 }
 
-.garden {
-  left: 50%; top: 65%;
+/* Container Kebun (Wadahnya) */
+.garden-area {
+  position: absolute;
+  left: 50%; 
+  top: 65%;
   transform: translate(-50%, -50%);
-  animation-delay: 1s;
+  
+  /* Susun 3 pot menyamping */
+  display: flex;
+  gap: 15px; /* Jarak antar pot */
+  z-index: 5;
+}
+
+/* Update class ini di style.css */
+.garden-slot {
+  width: 70px;
+  height: 70px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 32px;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+  
+  /* --- TAMBAHKAN 2 BARIS PENTING INI --- */
+  position: relative; /* Agar timer & bar tidak kabur keluar kotak */
+  overflow: hidden;   /* Agar bar hijaunya terpotong rapi mengikuti lengkungan sudut */
+}
+
+.garden-slot:hover {
+  transform: scale(1.1) translateY(-5px);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent);
+}
+
+/* Efek Siap Panen (Bersinar) */
+.garden-slot.ready {
+  background: rgba(134, 207, 140, 0.2); /* Hijau transparan */
+  box-shadow: 0 0 20px var(--accent);
+  border-color: var(--accent);
+  animation: bounceReady 1s infinite;
+}
+
+/* Teks Timer (Hitung Mundur) */
+.slot-timer {
+  position: absolute;
+  top: -10px; /* Muncul melayang di atas pot */
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: bold;
+  pointer-events: none; /* Supaya tetap bisa klik pot di bawahnya */
+  z-index: 10;
+  white-space: nowrap;
+}
+
+/* Update Loading Bar (Hapus Transition CSS) */
+/* Update class ini juga */
+.slot-loader {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 5px; /* Sedikit ditebalkan biar jelas */
+  background: var(--accent); /* Warna Hijau */
+  width: 0%;   /* Nanti diatur JS */
+  z-index: 5;  /* Pastikan muncul di atas tanah */
+  
+  /* Hapus transition kalau masih ada, biar geraknya mulus diatur JS */
+  transition: none; 
 }
 
 .pond {
@@ -1177,3 +1248,316 @@ input[type="range"]::-webkit-slider-thumb {
   from { transform: scale(0.8) translateY(20px); opacity: 0; }
   to { transform: scale(1) translateY(0); opacity: 1; }
 }
+
+/* Styling Judul Seksi Toko */
+.shop-section-title {
+  color: var(--accent);
+  font-size: 16px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Tombol Beli (Biru Langit) */
+.btn-buy {
+  background: #4ca1af;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 99px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-buy:hover {
+  background: #66d3e6;
+  transform: scale(1.05);
+  box-shadow: 0 0 10px #4ca1af;
+}
+
+/* Tombol Beli kalau uang kurang (Abu-abu) */
+.btn-buy.disabled {
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.3);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ================================================= */
+/* 🛒 SHOP STYLING BARU (BELI & JUAL)                */
+/* ================================================= */
+
+/* Judul Kategori (Jual Hasil Panen / Beli Bibit) */
+.shop-section-title {
+  color: var(--accent);
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 25px;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid rgba(255,255,255,0.1); /* Garis tipis */
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Tombol Beli (Warna Biru Laut) */
+.btn-buy {
+  background: #4ca1af; 
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 99px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 10px rgba(76, 161, 175, 0.3);
+}
+
+.btn-buy:hover {
+  background: #66d3e6;
+  transform: scale(1.05);
+  box-shadow: 0 0 15px #66d3e6;
+}
+
+/* Tombol Beli kalau Uang Kurang (Abu-abu mati) */
+.btn-buy.disabled {
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.3);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Tombol Makan di Inventory */
+.btn-eat {
+  position: absolute;
+  bottom: -15px; /* Muncul agak di bawah item */
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  
+  background: #ff9f43; /* Warna Oranye Makanan */
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  opacity: 0; /* Default sembunyi */
+  transition: all 0.2s;
+  z-index: 5;
+}
+
+/* Muncul saat item di-hover */
+.inv-item:hover .btn-eat {
+  opacity: 1;
+  bottom: 10px; /* Naik ke atas sedikit */
+  transform: translateX(-50%) scale(1);
+}
+
+.btn-eat:hover {
+  background: #ffb166;
+  transform: translateX(-50%) scale(1.1);
+}
+
+/* MOBILE FIX: Di HP tidak ada hover, jadi tombol makan muncul terus */
+@media (hover: none) {
+  .btn-eat {
+    opacity: 1;
+    bottom: 5px;
+    transform: translateX(-50%) scale(1);
+    position: absolute;
+  }
+  /* Geser angka qty ke atas biar gak ketutupan tombol */
+  .inv-qty {
+    top: 5px;
+    right: 5px;
+    bottom: auto;
+  }
+}
+
+/* Tombol Makan di Inventory */
+.btn-eat {
+  position: absolute;
+  bottom: -15px; /* Muncul agak di bawah item */
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  
+  background: #ff9f43; /* Warna Oranye Makanan */
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  opacity: 0; /* Default sembunyi */
+  transition: all 0.2s;
+  z-index: 5;
+}
+
+/* Muncul saat item di-hover */
+.inv-item:hover .btn-eat {
+  opacity: 1;
+  bottom: 10px; /* Naik ke atas sedikit */
+  transform: translateX(-50%) scale(1);
+}
+
+.btn-eat:hover {
+  background: #ffb166;
+  transform: translateX(-50%) scale(1.1);
+}
+
+/* MOBILE FIX: Di HP tidak ada hover, jadi tombol makan muncul terus */
+@media (hover: none) {
+  .btn-eat {
+    opacity: 1;
+    bottom: 5px;
+    transform: translateX(-50%) scale(1);
+    position: absolute;
+  }
+  /* Geser angka qty ke atas biar gak ketutupan tombol */
+  .inv-qty {
+    top: 5px;
+    right: 5px;
+    bottom: auto;
+  }
+} 
+
+/* Tombol Terkunci (Level Lock) */
+.btn-locked {
+  background: rgba(0, 0, 0, 0.3);
+  color: #aaa;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 12px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: not-allowed; /* Kursor tanda larangan */
+}
+
+/* ================================================= */
+/* ✨ FLOATING TEXT (ANGKA TERBANG)                  */
+/* ================================================= */
+
+.floating-text {
+  position: fixed; /* Supaya bisa muncul di mana saja di layar */
+  font-weight: 800;
+  font-size: 24px;
+  color: #fff;
+  text-shadow: 0 2px 5px rgba(0,0,0,0.5); /* Bayangan biar terbaca jelas */
+  pointer-events: none; /* Biar bisa ditembus klik mouse */
+  z-index: 9999; /* Paling atas */
+  
+  /* Animasi Gerak */
+  animation: floatUp 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes floatUp {
+  0% { 
+    transform: translate(-50%, 0) scale(0.5); /* Mulai kecil */
+    opacity: 0;
+  }
+  20% {
+    transform: translate(-50%, -10px) scale(1.2); /* Membesar & Meletup */
+    opacity: 1;
+  }
+  100% { 
+    transform: translate(-50%, -60px) scale(1); /* Terbang ke atas & hilang */
+    opacity: 0; 
+  }
+}
+
+/* ================================================= */
+/* ✨ PARTICLE EFFECTS (CONFETTI)                    */
+/* ================================================= */
+
+.particle {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%; /* Bulat */
+  pointer-events: none;
+  z-index: 9998; /* Di bawah teks terbang, di atas game */
+  
+  /* Animasi Partikel */
+  animation: popParticle 1s ease-out forwards;
+}
+
+@keyframes popParticle {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    /* Gerak acak (nanti diatur JS via variabel CSS) */
+    transform: translate(var(--x), var(--y)) scale(0);
+    opacity: 0;
+  }
+}
+
+/* ================================================= */
+/* 📖 JOURNAL & STATS STYLING                        */
+/* ================================================= */
+
+.journal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2 Kolom */
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: transform 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent);
+}
+
+.stat-icon {
+  font-size: 32px;
+  background: rgba(0,0,0,0.2);
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.stat-info {
+  text-align: left;
+}
+
+.stat-val {
+  font-size: 24px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.stat-label {
+  font-size: 12px;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
